@@ -178,6 +178,12 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
         #WebDriverWait(self.browser, 10).until(EC.presence_of_file(download_directory + 'interest_rates.csv'))
 
     '''-----------------------------------'''
+    def clean_CPI_data(self):
+        df = pd.read_csv(cpi_file_path)
+        df["CPI_val"] = df["CPI_val"].str.rstrip("%")
+        df["CPI_val"] = pd.to_numeric(df["CPI_val"])
+        df = df.dropna()
+        df.to_csv(cpi_file_path, index=False)
     '''-----------------------------------'''
     '''-----------------------------------'''
     '''-----------------------------------'''
