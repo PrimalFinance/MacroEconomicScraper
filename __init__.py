@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 print(f"CPI Source Url: {mac.get_fed_funds_source()}")
     
     else:
-        #mac.clean_CPI_data()
+        mac.update_treasury_yield_diff()
 
 
 

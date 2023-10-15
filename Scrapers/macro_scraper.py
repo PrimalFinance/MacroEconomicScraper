@@ -24,6 +24,7 @@ import pandas as pd
 cwd = os.getcwd()
 cpi_file_path = f"{cwd}\\MacroData\\CPI\\cpi.csv"
 fed_funds_path = f"{cwd}\\MacroData\\FedFunds\\fed_funds.csv"
+t10_t2_notes_path = f"{cwd}\\MacroData\\Treasury_Yield_Spread_10Y_2Y\\Treasury_Yield_Spread_10Y_2Y.csv"
 
 
 
@@ -31,9 +32,15 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
     def __init__(self):
         self.cpi_url = "https://www.rateinflation.com/inflation-rate/usa-historical-inflation-rate/"
         self.fed_funds_url = "https://fred.stlouisfed.org/series/FEDFUNDS"
+        self.t10_t2_url = "https://fred.stlouisfed.org/series/T10Y2Y"
         super().__init__()
 
-    ''' ---------------------- CPI ---------------------- '''
+    ''' ---------------------- Consumer Price Index (CPI) ---------------------- '''
+    """
+    Description: Is a widely used economic indicator that measures changes in the average prices paid by consumers 
+                 for a basket of goods and services over time.  The CPI is a key metric for assessing inflation,
+                 which is the increase in the general level of prices for goods and services in an economy.            
+    """
     '''-----------------------------------'''
     def update_cpi(self):
         # Get the cpi data in the form of a dataframe. 
@@ -135,7 +142,7 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
     """
     Description: The federal funds rate is the interest rate at which depository institutions (like banks and credit unions)
                  lend reserve balances to other depository institutions overnight on an uncollateralized basis.
-                 In the United States, this rate is determined by the Federal Reserve, which is the country's central bank.
+                  In the United States, this rate is determined by the Federal Reserve, which is the country's central bank.
     """
     '''-----------------------------------'''
     def update_fed_funds(self):
@@ -180,8 +187,6 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
         df = df[::-1]
         df.reset_index(drop=True, inplace=True)
         return df
-        #download_directory = f"{cwd}\\Interest_Rates\\"
-        #WebDriverWait(self.browser, 10).until(EC.presence_of_file(download_directory + 'interest_rates.csv'))
 
     '''-----------------------------------'''
     def clean_CPI_data(self):
@@ -190,8 +195,55 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
         df["CPI_val"] = pd.to_numeric(df["CPI_val"])
         df = df.dropna()
         df.to_csv(cpi_file_path, index=False)
+
+
+    ''' ---------------------- 10-Year Treasury minus 2-Year Treasury ---------------------- '''
+    """
+    Description: Subtracting the 2-Year Treasury yield from the 10-Year Treasury yield, will give you information on the current standing of the yield curve. 
+                 When the resulting difference is positive, it means yields for long-duration treasury notes are greater than yields for short-duration treasury notes.
+                 When the difference is negative, it means the yields for short-duration treasury notes are greater than yields on long-duration treasury notes. In other words, an inverted yield curve.
+                 """
     '''-----------------------------------'''
+    def update_treasury_yield_diff(self):
+        treasury_df = self.get_treasury_yield_diff()
+        treasury_df.to_csv(t10_t2_notes_path, index=False)
+
+
+    def get_treasury_yield_diff(self) -> pd.DataFrame:
+        csv_file_link = "https://fred.stlouisfed.org/graph/fredgraph.csv?bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=on&txtcolor=%23444444&ts=12&tts=12&width=1318&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=T10Y2YM&scale=left&cosd=1976-06-01&coed=2023-09-01&line_color=%234572a7&link_values=false&line_style=solid&mark_type=none&mw=3&lw=2&ost=-99999&oet=99999&mma=0&fml=a&fq=Monthly&fam=avg&fgst=lin&fgsnd=2020-02-01&line_index=1&transformation=lin&vintage_date=2023-10-14&revision_date=2023-10-14&nd=1976-06-01"
+        csv_data = requests.get(csv_file_link)
+
+        # Decode to a string. 
+        csv_content = csv_data.content.decode('utf-8').split("\n")
+        prev_year = None
+
+        data_collected = []
+        yearly_data = {}
+
+        for c in csv_content:
+
+            if c == "DATE,T10Y2Y" or c == "":
+                pass
+            else:
+                try:
+                    date, value = c.split(",")
+                    year, month, day = date.split("-")
+                    formatted_date = f"{year}-{int(month)}"
+                    data_collected.append((formatted_date, float(value)))
+                # Occurs when trying to split blank value. 
+                except ValueError:
+                    pass
+
+        df = pd.DataFrame(data_collected, columns=["Date", "Rate"])
+        # Convert rate column to properly display the rate. Previously {:,2f} would be displayed. Still haven't figured out why.
+        df["Rate"] = df["Rate"].apply(lambda x: f'{x:.2f}')
+        # Reverse the rows so the newest entries are on top. 
+        df = df[::-1]
+        df.reset_index(drop=True, inplace=True)
+        return df
     '''-----------------------------------'''
+    def get_treasury_yield_source(self) -> str:
+        return self.t10_t2_url
     '''-----------------------------------'''
     '''-----------------------------------'''
     '''-----------------------------------'''
