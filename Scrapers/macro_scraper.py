@@ -33,6 +33,7 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
         self.fed_funds_url = "https://fred.stlouisfed.org/series/FEDFUNDS"
         super().__init__()
 
+    ''' ---------------------- CPI ---------------------- '''
     '''-----------------------------------'''
     def update_cpi(self):
         # Get the cpi data in the form of a dataframe. 
@@ -130,7 +131,12 @@ class MacroScraper(Scrapers.scraper_template.ScraperTemplate):
 
 
 
-
+    ''' ---------------------- Fed Funds ---------------------- '''
+    """
+    Description: The federal funds rate is the interest rate at which depository institutions (like banks and credit unions)
+                 lend reserve balances to other depository institutions overnight on an uncollateralized basis.
+                 In the United States, this rate is determined by the Federal Reserve, which is the country's central bank.
+    """
     '''-----------------------------------'''
     def update_fed_funds(self):
         rates_df = self.get_fed_funds()
