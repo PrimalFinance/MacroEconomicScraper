@@ -1,0 +1,25 @@
+ticker,name,classification,category
+BZ=F,Brent Crude Oil,Oil,Fossil Fuels
+CC=F,Cocoa,Cocoa,Agriculture
+KC=F,Coffee,Coffee,Agriculture
+HG=F,Copper,Copper,Basic Materials
+ZC=F,Corn Futures,Corn,Agriculture
+CT=F,Cotton,Cotton,Basic Materials
+CL=F,Crude Oil,Oil,Fossil Fuels
+GC=F,Gold,Gold,Basic Materials
+HO=F,Heating Oil,Heating Oil,Fossil Fuels
+KE=F,KC HRW Wheat Futures,Wheat,Agriculture
+HE=F,Lean Hogs Futures,Hogs,Agriculture
+LE=F,Live Cattle,Cattle,Agriculture
+B0=F,Mont Belvieu LDH Propane (OPIS),Propane,Fossil Fuels
+NG=F,Natural Gas,Natural Gas,Fossil Fuels
+ZO=F,Oat Futures,Oats,Agriculture
+OJ=F,Orange Juice Futures,Orange Juice,Agriculture
+PA=F,Palladium,Palladium,Basic Materials
+PL=F,Platinum,Platinum,Basic Materials
+LBS=F,Random Length Lumber Futures,Lumber,Basic Materials
+ZR=F,Rough Rice Futures,Rice,Agriculture
+SI=F,Silver,Silver,Basic Materials
+ZL=F,Soybean Oil Futures,Soybean Oil,Agriculture
+SB=F,Sugar #11 Futures,Sugar,Agriculture
+HRC=F,U.S. Midwest Domestic Hot-Rolled Steel,Steel,Basic Materials
